@@ -31,7 +31,7 @@ public class JSONIntegrateTest {
 		String serviceKey = "He%2FIScsvFBeeDqm9YejpMBQ9vi6LkLBt9tSIuMaQ6fdlaxj9H7vsbcxwCOkp%2BpEIm3dC85GGbrBhH1D2mOcf1g%3D%3D";
 		String nx = "60"; // 위도
 		String ny = "125"; // 경도
-		String baseDate = "20230112"; // 조회하고싶은 날짜
+		String baseDate = "20230113"; // 조회하고싶은 날짜
 		String baseTime = "1100"; // 조회하고싶은 시간
 		String type = "JSON"; // 타입 xml, json 등등 ..
 		String numOfRows = "500"; // 한 페이지 결과 수
@@ -69,7 +69,7 @@ public class JSONIntegrateTest {
 		rd.close();
 		conn.disconnect();
 		String result = sb.toString();
-
+		
 		System.out.println(result);
 
 		JSONParser jsonParser = new JSONParser();
@@ -89,73 +89,73 @@ public class JSONIntegrateTest {
 		String fcstTime;
 
 		// jsonArray를 반복자로 반복
-		VO voObj = new VO();
-			for (int temp = 0; temp < parse_item.size(); temp++) {
-				object = (JSONObject) parse_item.get(temp);
-				category = (String) object.get("category"); // item 에서 카테고리를 검색
+		VO voObj = new VO(); //1개의 VO
+		
+		for (int temp = 0; temp < parse_item.size(); temp++) {
+			object = (JSONObject) parse_item.get(temp);
+			category = (String) object.get("category"); // item 에서 카테고리를 검색
+			fcstTime = (String) object.get("fcstTime");
 
-				// Error 발생할수도 있으며 받아온 정보를 double이 아니라 문자열로 읽으면 오류
-				value = (String) object.get("fcstValue");
+			// Error 발생할수도 있으며 받아온 정보를 double이 아니라 문자열로 읽으면 오류
+			value = (String) object.get("fcstValue");
 
-				WeatherValue weatherValue = WeatherValue.valueOf(category);
+			WeatherValue weatherValue = WeatherValue.valueOf(category);
 
-				switch (weatherValue) {
-				case TMP:
-					voObj.setTMP(value);
-					break;
-				case PTY:
-					voObj.setPTY(value);
-					break;
-				case PCP:
-					voObj.setPCP(value);
-					break;
-				case POP:
-					voObj.setPOP(value);
-					break;
-				case UUU:
-					voObj.setUUU(value);
-					break;
-				case VEC:
-					voObj.setVEC(value);
-					break;
-				case VVV:
-					voObj.setVVV(value);
-					break;
-				case SKY:
-					voObj.setSKY(value);
-					break;
-				case WSD:
-					voObj.setWSD(value);
-					break;
-				case WAV:
-					voObj.setWAV(value);
-					break;
-				default:
-					break;
-				}
-				if((voObj.getPCP() != null && !(voObj.getPCP()).equals("")) 
-				&& (voObj.getPOP() != null && !(voObj.getPOP()).equals("")) 
-				&& (voObj.getTMP() != null && !(voObj.getTMP()).equals("")) 
-				&& (voObj.getPTY() != null && !(voObj.getPTY()).equals(""))
-				&& (voObj.getUUU() != null && !(voObj.getUUU()).equals(""))
-				&& (voObj.getVEC() != null && !(voObj.getVEC()).equals(""))
-				&& (voObj.getVVV() != null && !(voObj.getVVV()).equals(""))
-				&& (voObj.getSKY() != null && !(voObj.getSKY()).equals(""))
-				&& (voObj.getWSD() != null && !(voObj.getWSD()).equals(""))
-				&& (voObj.getWAV() != null && !(voObj.getWAV()).equals(""))
-				) {
-					VOS.add(voObj);
-				}
-			}	
-			
-	
-			
-		weather.setDate(baseDate);
-		weather.setTime(baseTime);
+			switch (weatherValue) {
+			case TMP:
+				voObj.setTMP(value);
+				break;
+			case PTY:
+				voObj.setPTY(value);
+				break;
+			case PCP:
+				voObj.setPCP(value);
+				break;
+			case POP:
+				voObj.setPOP(value);
+				break;
+			case UUU:
+				voObj.setUUU(value);
+				break;
+			case VEC:
+				voObj.setVEC(value);
+				break;
+			case VVV:
+				voObj.setVVV(value);
+				break;
+			case SKY:
+				voObj.setSKY(value);
+				break;
+			case WSD:
+				voObj.setWSD(value);
+				break;
+			case WAV:
+				voObj.setWAV(value);
+				break;
+			default:
+				break;
+			}
+
+			//VO객체 요소에 null값이 없을때(값을 다 채웠을때 List 에 add)
+			if((voObj.getPCP() != null && !(voObj.getPCP()).equals("")) 
+			&& (voObj.getPOP() != null && !(voObj.getPOP()).equals("")) 
+			&& (voObj.getTMP() != null && !(voObj.getTMP()).equals("")) 
+			&& (voObj.getPTY() != null && !(voObj.getPTY()).equals(""))
+			&& (voObj.getUUU() != null && !(voObj.getUUU()).equals(""))
+			&& (voObj.getVEC() != null && !(voObj.getVEC()).equals(""))
+			&& (voObj.getVVV() != null && !(voObj.getVVV()).equals(""))
+			&& (voObj.getSKY() != null && !(voObj.getSKY()).equals(""))
+			&& (voObj.getWSD() != null && !(voObj.getWSD()).equals(""))
+			&& (voObj.getWAV() != null && !(voObj.getWAV()).equals(""))
+			) {
+				voObj.setDate(baseDate);
+				voObj.setTime(fcstTime);
+				VOS.add(voObj);
+				voObj = new VO();
+			}
+		}	
+		
 		// 잘 출력되는지 확인하고 싶으면 아래 주석 해제
-		for(int i=0; i<VOS.size(); i++) {
-			System.out.println(VOS.get(i));
-		}
-
+		System.out.println(VOS);
 	}
 }
